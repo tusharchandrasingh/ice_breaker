@@ -9,7 +9,13 @@ from third_parties.linkedin import scrape_linkedin_profile
 if __name__ == "__main__":
     print("Hello LangChain!")
 
-    linkedin_profile_url = linkedin_lookup_agent(name="Eden Marco Udemy")
+    input_name = "Eden Marco Udemy"
+    linkedin_profile_url = linkedin_lookup_agent(name=input_name)
+    print("log: looking for linkedin url for ", input_name)
+
+    print("log: scraping linkedin url", linkedin_profile_url, "for information ")
+    linkedin_data = scrape_linkedin_profile(linkedin_profile_url=linkedin_profile_url)
+    print("log: scraping linkedin complete")
 
     summary_template = """
          given the Linkedin information {information} about a person from I want you to create:
@@ -25,6 +31,5 @@ if __name__ == "__main__":
 
     chain = LLMChain(llm=llm, prompt=summary_prompt_template)
 
-    linkedin_data = scrape_linkedin_profile(linkedin_profile_url=linkedin_profile_url)
-
+    print("log: running llm")
     print(chain.run(information=linkedin_data))
