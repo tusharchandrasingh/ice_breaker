@@ -5,6 +5,7 @@ from langchain.agents import initialize_agent, Tool, AgentType
 
 from tools.tools import get_profile_url
 
+
 def lookup(name: str) -> str:
     llm = ChatOpenAI(temperature=0, model_name="gpt-3.5-turbo")
     template = """given the full name {name_of_person} I want you to find a link to their twitter profile page, and extract from it their username.
@@ -29,6 +30,6 @@ def lookup(name: str) -> str:
         input_variables=["name_of_person"], template=template
     )
 
-    twitter_username = agent.run(prompt_template.format(name_of_person = name))
+    twitter_username = agent.run(prompt_template.format(name_of_person=name))
 
     return twitter_username
