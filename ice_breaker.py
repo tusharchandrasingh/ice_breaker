@@ -1,5 +1,3 @@
-# todo: Review if chatgpt is able to parse both Linkedin and Twitter
-# todo: update the code to give answers to the three questions
 
 from langchain import PromptTemplate
 from langchain.chat_models import ChatOpenAI
