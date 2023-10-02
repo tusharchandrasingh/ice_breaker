@@ -1,4 +1,3 @@
-
 from langchain import PromptTemplate
 from langchain.chat_models import ChatOpenAI
 from langchain.chains import LLMChain
@@ -11,10 +10,10 @@ from third_parties.twitter import scrape_user_tweets
 
 from third_parties.tokencounter import num_tokens_from_string
 
-name = "Harrison Chase"
-if __name__ == "__main__":
-    print("Hello LangChain!")
+from output_parser import  person_intel_parser, PersonIntel
 
+
+def ice_break(name: str) -> PersonIntel:
     # LinkedIn processing
     print("log: looking for linkedin url for ", name)
     linkedin_profile_url = linkedin_lookup_agent(name=name)
@@ -39,23 +38,38 @@ if __name__ == "__main__":
     )
 
     # Summarize using LLM
+
+    # summary_template = """
+    #      given Harrison Chase's Linkedin information {linkedin_information} and some tweets {twitter_information} on Harrison Chase, I want you to create:
+    #      1. A short summary with his/her name
+    #      2. Two interesting facts about them
+    #      3. A topic that may interest them
+    #      4. 2 creative Ice breakers to open a conversation with them
+    #     \n {format_instructions}
+    #  """
+
+    # use only Linkedin Data
     summary_template = """
-         given Harrison Chase's Linkedin information {linkedin_information} and some tweets {twitter_information} on Harrison Chase, I want you to create:
+         given Harrison Chase's Linkedin information {linkedin_information} on Harrison Chase, I want you to create:
          1. A short summary with his/her name
          2. Two interesting facts about them
          3. A topic that may interest them
          4. 2 creative Ice breakers to open a conversation with them
+        \n {format_instructions}
      """
 
     summary_prompt_template = PromptTemplate(
-        input_variables=["linkedin_information", "twitter_information"],
+        input_variables=["linkedin_information"],
         template=summary_template,
+        partial_variables={
+            "format_instructions": person_intel_parser.get_format_instructions()
+        },
     )
 
     # calculate the number of tokens in the summary template
     # print("log: Summary prompt template is ")
     prompt_summary = summary_prompt_template.format(
-        linkedin_information=linkedin_data, twitter_information=tweets
+        linkedin_information=linkedin_data
     )
     prompt_token_count = num_tokens_from_string(prompt_summary)
     print(f"Summary prompt template is {prompt_token_count} tokens")
@@ -65,5 +79,12 @@ if __name__ == "__main__":
 
     print("log: running llm")
     result = chain.run(linkedin_information=linkedin_data, twitter_information=tweets)
-    print(result)
     print(f"\nlog: LLM output contains {num_tokens_from_string(result)} tokens")
+    return person_intel_parser.parse(result)
+
+
+if __name__ == "__main__":
+    print("Hello LangChain!")
+    name = "Harrison Chase"
+    result = ice_break(name)
+    print(result)
