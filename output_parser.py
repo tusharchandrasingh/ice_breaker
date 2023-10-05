@@ -9,7 +9,7 @@ class PersonIntel(BaseModel):
     topics_of_interest: List[str] = Field(
         description="Topics that may interest the person"
     )
-    ice_breaker: List[str] = Field(
+    ice_breakers: List[str] = Field(
         description="Create ice breaker to open conversation with the person"
     )
 
@@ -18,7 +18,7 @@ class PersonIntel(BaseModel):
             "summary": self.summary,
             "facts": self.facts,
             "topics_of_interest": self.topics_of_interest,
-            "ice_breakers": self.ice_breaker,
+            "ice_breakers": self.ice_breakers,
         }
 
 

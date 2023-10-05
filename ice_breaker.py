@@ -10,10 +10,12 @@ from third_parties.twitter import scrape_user_tweets
 
 from third_parties.tokencounter import num_tokens_from_string
 
-from output_parser import  person_intel_parser, PersonIntel
+from output_parser import person_intel_parser, PersonIntel
+
+from typing import Tuple
 
 
-def ice_break(name: str) -> PersonIntel:
+def ice_break(name: str) -> Tuple[PersonIntel, str]:
     # LinkedIn processing
     print("log: looking for linkedin url for ", name)
     linkedin_profile_url = linkedin_lookup_agent(name=name)
@@ -68,9 +70,7 @@ def ice_break(name: str) -> PersonIntel:
 
     # calculate the number of tokens in the summary template
     # print("log: Summary prompt template is ")
-    prompt_summary = summary_prompt_template.format(
-        linkedin_information=linkedin_data
-    )
+    prompt_summary = summary_prompt_template.format(linkedin_information=linkedin_data)
     prompt_token_count = num_tokens_from_string(prompt_summary)
     print(f"Summary prompt template is {prompt_token_count} tokens")
 
@@ -80,7 +80,7 @@ def ice_break(name: str) -> PersonIntel:
     print("log: running llm")
     result = chain.run(linkedin_information=linkedin_data, twitter_information=tweets)
     print(f"\nlog: LLM output contains {num_tokens_from_string(result)} tokens")
-    return person_intel_parser.parse(result)
+    return person_intel_parser.parse(result), linkedin_data.get("profile_pic_url")
 
 
 if __name__ == "__main__":
